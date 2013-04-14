@@ -22,9 +22,10 @@ class RunFailed(object):
     def __init__(self, config):
         self.config = config
         cwd = py.path.local(os.getcwd())
-        self.pickle_path = cwd.ensure(".pytest", "failed")
+        self.pickle_path = cwd.ensure(".pytest", "failed").strpath
         try:
-            self.failed = pickle.loads(self.pickle_path.read())
+            with open(self.pickle_path, "rb") as fp:
+                self.failed = pickle.load(fp)
         except EOFError:
             self.failed = set()
 
@@ -36,8 +37,9 @@ class RunFailed(object):
     def pytest_runtestloop(self, session):
         if not self.failed:
             return
-        print "running %s previously failing test(s)" % len(session.items)
+        print("running %s previously failing test(s)" % len(session.items))
 
     def pytest_terminal_summary(self, terminalreporter):
-        failed = terminalreporter.stats.get("failed", list())
-        self.pickle_path.dump([x.nodeid for x in failed])
+        self.failed = terminalreporter.stats.get("failed", list())
+        with open(self.pickle_path, "wb") as fp:
+            pickle.dump(self.failed, fp)

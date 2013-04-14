@@ -4,7 +4,7 @@ setup(
     name='pytest-runfailed',
     license='BSD',
     description='implement a --failed option for pytest',
-    version='0.2',
+    version='0.3',
     author='Dimitri Merejkowsky',
     author_email='d.merej@gmail.com',
     url='http://github.com/dmerejkowsky/pytest-runfailed',
