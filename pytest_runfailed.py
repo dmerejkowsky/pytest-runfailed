@@ -32,7 +32,8 @@ class RunFailed(object):
     def pytest_collection_modifyitems(self, session, config, items):
         if not self.failed:
             return
-        items[:] = [x for x in items if x.nodeid in self.failed]
+        nodeids = frozenset(report.nodeid for report in self.failed)
+        items[:] = [x for x in items if x.nodeid in nodeids]
 
     def pytest_runtestloop(self, session):
         if not self.failed:
