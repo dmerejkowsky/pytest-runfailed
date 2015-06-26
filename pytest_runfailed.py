@@ -42,7 +42,11 @@ class RunFailed(object):
 
     def pytest_terminal_summary(self, terminalreporter):
         failed = terminalreporter.stats.get("failed", list())
-        self.failed = frozenset(report.nodeid for report in failed)
+        passed = terminalreporter.stats.get("passed", list())
+        self.failed = frozenset(
+            set(report.nodeid for report in failed).union(
+                self.failed.difference(
+                    set(report.nodeid for report in passed))))
 
         with open(self.pickle_path, "wb") as fp:
             pickle.dump(self.failed, fp)
