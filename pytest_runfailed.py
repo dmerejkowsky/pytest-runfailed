@@ -41,10 +41,11 @@ class RunFailed(object):
         print("running %s previously failing test(s)" % len(session.items))
 
     def pytest_terminal_summary(self, terminalreporter):
+        error = terminalreporter.stats.get("error", list())
         failed = terminalreporter.stats.get("failed", list())
         passed = terminalreporter.stats.get("passed", list())
         self.failed = frozenset(
-            set(report.nodeid for report in failed).union(
+            set(report.nodeid for report in (failed + error)).union(
                 self.failed.difference(
                     set(report.nodeid for report in passed))))
 
